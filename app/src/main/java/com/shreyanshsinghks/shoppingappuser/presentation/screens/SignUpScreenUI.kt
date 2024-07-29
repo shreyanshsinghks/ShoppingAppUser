@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -23,11 +24,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.shreyanshsinghks.shoppingappuser.domain.models.UserData
+import com.shreyanshsinghks.shoppingappuser.presentation.navigation.Routes
+import com.shreyanshsinghks.shoppingappuser.presentation.navigation.SubNavigation
 import com.shreyanshsinghks.shoppingappuser.presentation.viewmodel.ShoppingAppViewModel
 
 @Composable
-fun SignUpScreenUI(viewModel: ShoppingAppViewModel = hiltViewModel()) {
+fun SignUpScreenUI(
+    viewModel: ShoppingAppViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
     var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -40,6 +47,14 @@ fun SignUpScreenUI(viewModel: ShoppingAppViewModel = hiltViewModel()) {
     } else if (state.value.error.isNullOrEmpty().not()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(text = state.value.error.toString())
+        }
+    } else if (state.value.success.isNullOrEmpty().not()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            AlertDialog(onDismissRequest = { }, confirmButton = {
+                Button(onClick = { navController.navigate(SubNavigation.MainHomeScreen) }) {
+                    Text(text = "Go to home")
+                }
+            }, title = { Text(text = "Congratulations Login Successful") })
         }
     } else {
         Column(
@@ -79,6 +94,9 @@ fun SignUpScreenUI(viewModel: ShoppingAppViewModel = hiltViewModel()) {
                 phone = ""
             }) {
                 Text(text = "Sign Up")
+            }
+            Button(onClick = { navController.navigate(Routes.LoginScreen) }) {
+                Text(text = "Already a User! Click to Login")
             }
         }
     }

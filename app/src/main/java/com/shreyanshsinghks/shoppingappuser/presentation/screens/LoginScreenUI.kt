@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -20,14 +21,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.shreyanshsinghks.shoppingappuser.domain.models.UserData
+import com.shreyanshsinghks.shoppingappuser.presentation.navigation.Routes
+import com.shreyanshsinghks.shoppingappuser.presentation.navigation.SubNavigation
 import com.shreyanshsinghks.shoppingappuser.presentation.viewmodel.ShoppingAppViewModel
 
 @Composable
-fun LogInScreenUI(viewModel: ShoppingAppViewModel = hiltViewModel()) {
+fun LoginScreenUI(
+    viewModel: ShoppingAppViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val state = viewModel.uiState.collectAsState()
+    val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val showDialog = remember { mutableStateOf(false) }
 
     if (state.value.isLoading) {
         // Show loading
@@ -38,7 +47,11 @@ fun LogInScreenUI(viewModel: ShoppingAppViewModel = hiltViewModel()) {
         }
     } else if (state.value.success.isNullOrEmpty().not()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = state.value.success.toString())
+            AlertDialog(onDismissRequest = { }, confirmButton = {
+                Button(onClick = { navController.navigate(SubNavigation.MainHomeScreen) }) {
+                    Text(text = "Go to home")
+                }
+            }, title = { Text(text = "Congratulations Login Successful") })
         }
     } else {
         Column(
@@ -57,6 +70,10 @@ fun LogInScreenUI(viewModel: ShoppingAppViewModel = hiltViewModel()) {
                 password = ""
             }) {
                 Text(text = "Log In")
+            }
+
+            Button(onClick = { navController.navigate(Routes.SignUpScreen) }) {
+                Text(text = "New User! Click to Sign Up")
             }
         }
     }
