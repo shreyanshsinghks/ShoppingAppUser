@@ -13,6 +13,5 @@ class CreateUserUseCase @Inject constructor(private val repository: Repository )
 
     fun loginUser(userData: UserData): Flow<ResultState<String>> {
         return repository.loginUserWithEmailAndPassword(userData)
-
     }
 }

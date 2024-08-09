@@ -10,12 +10,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import com.google.firebase.auth.FirebaseAuth
 import com.shreyanshsinghks.shoppingappuser.presentation.navigation.App
 import com.shreyanshsinghks.shoppingappuser.ui.theme.ShoppingAppUserTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var firebaseAuth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,7 +27,7 @@ class MainActivity : ComponentActivity() {
             ShoppingAppUserTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Surface(modifier = Modifier.padding(innerPadding)) {
-                        App()
+                        App(firebaseAuth = firebaseAuth)
                     }
                 }
             }

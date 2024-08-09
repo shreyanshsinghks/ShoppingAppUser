@@ -59,9 +59,9 @@ fun LoginScreenUI(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(value = email, onValueChange = { email = it })
+            TextField(value = email, onValueChange = { email = it }, label = { Text(text = "Email") })
             Spacer(modifier = Modifier.height(20.dp))
-            TextField(value = password, onValueChange = { password = it })
+            TextField(value = password, onValueChange = { password = it }, label = { Text(text = "Password") })
             Spacer(modifier = Modifier.height(20.dp))
             Button(onClick = {
                 val userData = UserData(email = email, password = password, name = "", phone = "")
