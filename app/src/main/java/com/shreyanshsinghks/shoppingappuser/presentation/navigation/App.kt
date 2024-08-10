@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.shreyanshsinghks.shoppingappuser.presentation.screens.HomeScreenUI
 import com.shreyanshsinghks.shoppingappuser.presentation.screens.LoginScreenUI
+import com.shreyanshsinghks.shoppingappuser.presentation.screens.OnboardingScreenUI
 import com.shreyanshsinghks.shoppingappuser.presentation.screens.ProfileScreenUI
 import com.shreyanshsinghks.shoppingappuser.presentation.screens.SignUpScreenUI
 
@@ -22,7 +23,11 @@ fun App(firebaseAuth: FirebaseAuth) {
 
     NavHost(navController = navController, startDestination = startDestination) {
 
-        navigation<SubNavigation.LoginSignUpScreen>(startDestination = Routes.LoginScreen) {
+        navigation<SubNavigation.LoginSignUpScreen>(startDestination = Routes.OnBoardingScreen) {
+            composable<Routes.OnBoardingScreen> {
+                OnboardingScreenUI(navController = navController)
+            }
+
             composable<Routes.LoginScreen> {
                 LoginScreenUI(navController = navController)
             }
@@ -32,7 +37,7 @@ fun App(firebaseAuth: FirebaseAuth) {
             }
         }
 
-        navigation<SubNavigation.MainHomeScreen>(startDestination = Routes.HomeScreen) {
+        navigation<SubNavigation.MainHomeScreen>(startDestination = Routes.ProfileScreen) {
 
             composable<Routes.HomeScreen> {
                 HomeScreenUI(navController = navController)

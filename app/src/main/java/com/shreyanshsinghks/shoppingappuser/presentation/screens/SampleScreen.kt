@@ -1,17 +1,14 @@
 package com.shreyanshsinghks.shoppingappuser.presentation.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -37,22 +34,23 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.shreyanshsinghks.shoppingappuser.R
 import com.shreyanshsinghks.shoppingappuser.domain.models.UserData
 import com.shreyanshsinghks.shoppingappuser.presentation.navigation.Routes
 import com.shreyanshsinghks.shoppingappuser.presentation.navigation.SubNavigation
 import com.shreyanshsinghks.shoppingappuser.presentation.viewmodel.ShoppingAppViewModel
 
+
 @Composable
-fun LoginScreenUI(
+fun LoginScreenUI1(
     viewModel: ShoppingAppViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val state = viewModel.uiState.collectAsStateWithLifecycle()
-    val showDialog = remember { mutableStateOf(false) }
+    var name by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
 
     if (state.value.isLoading) {
         // Show loading
@@ -79,20 +77,48 @@ fun LoginScreenUI(
         ) {
 
             Text(
-                text = "Log-In",
+                text = "Sign-Up",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             )
 
-            Spacer(modifier = Modifier.height(150.dp))
+            Spacer(modifier = Modifier.height(56.dp))
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = name,
+                onValueChange = { name = it },
                 label = { Text("Phone Number Or Email") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
+                shape = RoundedCornerShape(8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = phone,
+                onValueChange = { phone = it },
+                label = { Text("Password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                shape = RoundedCornerShape(8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 shape = RoundedCornerShape(8.dp)
             )
 
@@ -114,22 +140,25 @@ fun LoginScreenUI(
 
             Button(
                 onClick = {
-                    val userData = UserData(email = email, password = password, name = "", phone = "")
-                    viewModel.loginUser(userData)
+                    val userData =
+                        UserData(name = name, email = email, password = password, phone = phone)
+                    viewModel.createUser(userData)
+                    name = ""
                     email = ""
                     password = ""
+                    phone = ""
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF42A5F5))
             ) {
-                Text(text = "Log in", color = Color.White)
+                Text(text = "Sign Up", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(text = "— Or Login with —")
+            Text(text = "— Or Sign Up with —")
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -144,32 +173,13 @@ fun LoginScreenUI(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            TextButton(onClick = { navController.navigate(Routes.SignUpScreen) }) {
+            TextButton(onClick = { navController.navigate(Routes.LoginScreen) }) {
                 Text(
-                    text = "Are You a New User?\nSIGN UP",
+                    text = "Alread a User?\nLOG IN",
                     fontWeight = FontWeight.Bold,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }
         }
-    }
-}
-
-
-@Composable
-fun SocialLoginButton(imageResId: Int) {
-    Button(
-        onClick = { /*TODO*/ },
-        modifier = Modifier
-            .size(46.dp),
-        shape = RoundedCornerShape(50),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = imageResId),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }

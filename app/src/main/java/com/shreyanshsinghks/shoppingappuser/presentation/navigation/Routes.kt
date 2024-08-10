@@ -35,4 +35,7 @@ sealed class Routes {
     @Serializable
     object CheckoutScreen
 
+    @Serializable
+    object OnBoardingScreen
+
 }
