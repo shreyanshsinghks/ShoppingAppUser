@@ -25,12 +25,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ShoppingAppUserTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Surface(modifier = Modifier.padding(innerPadding)) {
-                        App(firebaseAuth = firebaseAuth)
-//                        OnboardingScreen()
-                    }
-                }
+                App(firebaseAuth = firebaseAuth)
             }
         }
     }
