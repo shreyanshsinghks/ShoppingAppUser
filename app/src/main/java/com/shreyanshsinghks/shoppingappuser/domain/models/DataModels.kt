@@ -11,3 +11,9 @@ data class UserDataParent(
     val nodeId: String = "",
     val userData: UserData = UserData(),
 )
+
+data class CategoryModel (
+    var name: String = "",
+    val date: Long = System.currentTimeMillis(),
+    val createdBy: String = "",
+)

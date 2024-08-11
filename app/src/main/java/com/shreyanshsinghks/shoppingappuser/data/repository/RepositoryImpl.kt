@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.shreyanshsinghks.shoppingappuser.common.ResultState
 import com.shreyanshsinghks.shoppingappuser.common.USER_COLLECTION
+import com.shreyanshsinghks.shoppingappuser.domain.models.CategoryModel
 import com.shreyanshsinghks.shoppingappuser.domain.models.ProductModel
 import com.shreyanshsinghks.shoppingappuser.domain.models.UserData
 import com.shreyanshsinghks.shoppingappuser.domain.models.UserDataParent
@@ -95,6 +96,25 @@ class RepositoryImpl @Inject constructor(
             }
         }
 
+    override fun getCategories(): Flow<ResultState<List<CategoryModel>>> = callbackFlow{
+        trySend(ResultState.Loading)
+
+        val listenerRegistration = firebaseFirestore.collection("categories")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(ResultState.Error(error.message.toString()))
+                }
+
+                if (snapshot != null) {
+                    val categories = snapshot.toObjects(CategoryModel::class.java)
+                    trySend(ResultState.Success(categories))
+                }
+            }
+        awaitClose {
+            listenerRegistration.remove()
+        }
+    }
+
     override fun getAllProducts(): Flow<ResultState<List<ProductModel>>> = callbackFlow {
         trySend(ResultState.Loading)
         val listenerRegistration = firebaseFirestore.collection("products")
@@ -112,4 +132,6 @@ class RepositoryImpl @Inject constructor(
             listenerRegistration.remove()
         }
     }
+
+
 }
