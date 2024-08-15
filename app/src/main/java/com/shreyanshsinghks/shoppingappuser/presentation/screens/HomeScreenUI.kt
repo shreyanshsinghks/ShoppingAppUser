@@ -2,6 +2,12 @@ package com.shreyanshsinghks.shoppingappuser.presentation.screens
 
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Voicemail
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -68,6 +74,12 @@ fun HomeScreenUI(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        if(productUiState.isLoading){
+            items(10) {
+                ShimmerProductCard()
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
         item {
             // Search Bar
             Row(
@@ -81,30 +93,22 @@ fun HomeScreenUI(
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Filled.Search,
-                            contentDescription = "Search Icon"
+                            contentDescription = "Search Icon",
+                            tint = Color.Gray // Slightly darker gray for visibility
                         )
                     },
-                    placeholder = { Text("Search") },
+                    placeholder = { Text("Search", color = Color.Gray) }, // Placeholder color
                     modifier = Modifier
                         .weight(1f)
                         .height(50.dp),
                     shape = RoundedCornerShape(25.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFFF5F5F5),
-                        focusedContainerColor = Color(0xFFF5F5F5),
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedBorderColor = Color.Transparent
+                        unfocusedContainerColor = Color(0xFFEEEEEE), // Light gray background
+                        focusedContainerColor = Color(0xFFEEEEEE),
+                        unfocusedBorderColor = Color.LightGray, // Light gray border
+                        focusedBorderColor = Color(0xFF007BFF)  // Blue border when focused
                     )
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(onClick = { /* Handle voice search action here */ }) {
-                    Icon(
-                        imageVector = Icons.Filled.Voicemail,
-                        contentDescription = "Voice Search",
-                        tint = Color(0xFF808080)
-                    )
-                }
             }
         }
 
@@ -232,6 +236,7 @@ fun HomeScreenUI(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.height(500.dp)
             ) {
+
                 filteredProducts?.let { list ->
                     items(list) { product ->
                         ProductCard(product = product)
@@ -239,9 +244,16 @@ fun HomeScreenUI(
                 }
             }
         }
-
     }
 }
+
+
+
+
+
+
+
+
 
 
 // Category Item Composable
@@ -262,17 +274,22 @@ fun CategoryItem(category: String, isSelected: Boolean, onSelect: (String) -> Un
             ),
             contentPadding = PaddingValues(0.dp)
         ) {
-                AsyncImage(
-                    model = R.drawable.ic_launcher_foreground, // Replace with actual category Image
-                    contentDescription = category,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(8.dp),
-                    contentScale = ContentScale.Fit
-                )
+            AsyncImage(
+                model = R.drawable.ic_launcher_foreground, // Replace with actual category Image
+                contentDescription = category,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp),
+                contentScale = ContentScale.Fit
+            )
         }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = category, fontSize = 12.sp, modifier = Modifier.fillMaxWidth(),textAlign = TextAlign.Center)
+        Text(
+            text = category,
+            fontSize = 12.sp,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -375,3 +392,90 @@ fun DotsIndicator(
     }
 }
 
+@Composable
+fun ShimmerProductCard(
+    cardHeight: Dp = 250.dp,
+    imageHeight: Dp = 150.dp,
+    cornerRadius: Dp = 8.dp,
+    padding: Dp = 8.dp
+) {
+    val shimmerColors = listOf(
+        Color.LightGray.copy(alpha = 0.6f),
+        Color.LightGray.copy(alpha = 0.9f),
+        Color.LightGray.copy(alpha = 0.6f),
+    )
+    val transition = rememberInfiniteTransition(label = "shimmerLoading")
+    val translateAnim by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1200,
+                easing = LinearEasing
+            ),
+            repeatMode = RepeatMode.Reverse
+        ), label = "shimmerLoading"
+    )
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(cardHeight),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(imageHeight)
+                    .background(
+                        brush = shimmerBrush(
+                            colors = shimmerColors,
+                            translateAnim = translateAnim
+                        ),
+                        shape = RoundedCornerShape(
+                            topStart = cornerRadius,
+                            topEnd = cornerRadius
+                        )
+                    )
+            )
+            Spacer(modifier = Modifier.height(padding))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .padding(horizontal = padding)
+                    .background(
+                        brush = shimmerBrush(
+                            colors = shimmerColors,
+                            translateAnim = translateAnim
+                        )
+                    )
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(16.dp)
+                    .padding(horizontal = padding)
+                    .background(
+                        brush = shimmerBrush(
+                            colors = shimmerColors,
+                            translateAnim = translateAnim
+                        )
+                    )
+            )
+
+        }
+    }
+}
+
+@Composable
+fun shimmerBrush(
+    colors: List<Color>,
+    translateAnim: Float
+) = androidx.compose.ui.graphics.Brush.linearGradient(
+    colors = colors,
+    start = Offset(10f, 10f),
+    end = Offset(translateAnim, translateAnim)
+)

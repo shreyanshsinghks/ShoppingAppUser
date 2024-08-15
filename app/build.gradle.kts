@@ -85,4 +85,5 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation(libs.androidx.constraintlayout.compose)
 }
